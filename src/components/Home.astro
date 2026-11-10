@@ -1,131 +1,320 @@
 ---
-import { Image } from 'astro:assets';
-import { copy, site, type Language } from '../data/site';
-import '../styles/site.css';
-import pool from '../assets/piscina.jpg';
-import house from '../assets/casolare.jpg';
-import kitchen from '../assets/camera.jpg';
-import veranda from '../assets/veranda.jpg';
-import garden from '../assets/giardino.jpg';
-import village from '../assets/anghiari.jpg';
-import suite from '../assets/suite.jpg';
-import bedroom from '../assets/barbolana.jpg';
-
-interface Props { lang: Language }
+import { Image } from "astro:assets";
+import Layout from "./Layout.astro";
+import Reviews from "./Reviews.astro";
+import { type Language } from "../data/site";
+import { pathFor } from "../data/pages";
+import pool from "../assets/piscina.jpg";
+import house from "../assets/casolare.jpg";
+import kitchen from "../assets/camera.jpg";
+import bath from "../assets/bagno-falegname.jpg";
+import garden from "../assets/giardino.jpg";
+import village from "../assets/anghiari-borgo.jpg";
+interface Props {
+  lang: Language;
+}
 const { lang } = Astro.props;
-const t = copy[lang];
-const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
-const canonical = new URL(lang === 'it' ? '/' : '/en/', Astro.site);
-const sections = ['casolare', 'vita', 'territorio', 'contatti'];
-const experienceImages = [pool, veranda, garden];
-const whatsapp = `${site.whatsapp}?text=${encodeURIComponent(lang === 'it' ? 'Ciao! Vorrei informazioni per un soggiorno a Palazzolo Resort.' : 'Hello! I would like to ask about a stay at Palazzolo Resort.')}`;
+const it = lang === "it";
 ---
-<!doctype html>
-<html lang={lang}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5f2ea" />
-    <title>{t.title}</title>
-    <meta name="description" content={t.description} />
-    <meta name="robots" content={indexable ? 'index,follow,max-image-preview:large' : 'noindex,nofollow'} />
-    {indexable && <>
-      <link rel="canonical" href={canonical} />
-      <link rel="alternate" hreflang="it" href={new URL('/', Astro.site)} />
-      <link rel="alternate" hreflang="en" href={new URL('/en/', Astro.site)} />
-      <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />
-    </>}
-    <meta property="og:title" content={t.title} />
-    <meta property="og:description" content={t.description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content={lang === 'it' ? 'it_IT' : 'en_GB'} />
-    <meta property="og:image" content={new URL(pool.src, Astro.site)} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body id="inizio">
-    <a class="skip-link" href="#main">{t.skip}</a>
-    <header class="site-header">
-      <a class="brand" href={lang === 'it' ? '/' : '/en/'} aria-label="Palazzolo Resort — home">
-        <span class="brand-name">palazzolo<span class="brand-star" aria-hidden="true">✳</span></span>
-        <span class="brand-sub">RESORT · TOSCANA</span>
+
+<Layout lang={lang}>
+  <section class="hero" aria-labelledby="hero-title">
+    <Image
+      class="hero-image"
+      src={pool}
+      alt={
+        it
+          ? "La piscina privata di Palazzolo affacciata sulle colline"
+          : "Palazzolo private pool overlooking the hills"
+      }
+      widths={[640, 960, 1440, 1920, 2560]}
+      sizes="100vw"
+      format="webp"
+      quality={85}
+      loading="eager"
+      fetchpriority="high"
+    />
+    <div class="hero-shade"></div>
+    <div class="hero-content">
+      <p class="eyebrow">ANGHIARI · TOSCANA</p>
+      <h1 id="hero-title">
+        {it ? "La vostra casa" : "Your Tuscan"}
+        <br />
+        <em>{it ? "in Toscana." : "home."}</em>
+      </h1>
+      <p class="hero-exclusive">
+        {it
+          ? "Un solo gruppo. Tutto Palazzolo per voi."
+          : "One group. All of Palazzolo to yourselves."}
+      </p>
+      <p class="hero-description">
+        {it
+          ? "Quattro camere, quattro bagni. Piscina, giardino e casolare riservati in esclusiva per tutta la durata del soggiorno."
+          : "Four bedrooms, four bathrooms. The pool, garden and farmhouse are exclusively yours throughout your stay."}
+      </p>
+      <div class="hero-links">
+        <a class="button button-light" href={pathFor(lang, "house")}>
+          {it ? "Entrate nel casolare" : "Explore the farmhouse"} ↗
+        </a>
+        <a href={pathFor(lang, "contact")}>
+          {it ? "Chiedi disponibilità" : "Ask about availability"} ↗
+        </a>
+      </div>
+    </div>
+    <span class="hero-bottom-note">
+      {it
+        ? "UNA CASA DI FAMIGLIA, UN SOGGIORNO TUTTO VOSTRO"
+        : "A FAMILY HOME, A STAY ALL YOUR OWN"}
+    </span>
+  </section>
+  <div class="facts">
+    {(it
+      ? [
+          ["01", "Gruppo alla volta"],
+          ["04", "Camere"],
+          ["04", "Bagni"],
+          ["100%", "Piscina e giardino privati"],
+        ]
+      : [
+          ["01", "Group at a time"],
+          ["04", "Bedrooms"],
+          ["04", "Bathrooms"],
+          ["100%", "Private pool and garden"],
+        ]
+    ).map(([n, label]) => (
+      <div>
+        <strong>{n}</strong>
+        <span>{label}</span>
+      </div>
+    ))}
+  </div>
+  <section class="editorial section-wrap" id="casolare">
+    <div class="editorial-copy">
+      <p class="eyebrow">
+        {it ? "IL CARATTERE DI UNA CASA VERA" : "A HOME WITH CHARACTER"}
+      </p>
+      <h2>
+        {it ? "Una storia di famiglia." : "A family story."}
+        <br />
+        <em>{it ? "Un posto per la vostra." : "A place for yours."}</em>
+      </h2>
+      <p class="lead">
+        {it
+          ? "La pietra del casolare, il legno degli arredi, le colline di Anghiari. Palazzolo è la casa dei nostri nonni, restaurata per accogliere nuovi ricordi."
+          : "Farmhouse stone, wooden furniture, the hills of Anghiari. Palazzolo is our grandparents’ home, restored to welcome new memories."}
+      </p>
+      <p>
+        {it
+          ? "Gli ambienti conservano le tracce della casa di un tempo e le incontrano con dettagli contemporanei. Qui potete ritrovarvi a tavola, fermarvi in giardino o partire alla scoperta della Toscana. Con la libertà di avere l’intera struttura a vostra disposizione."
+          : "Original features sit alongside contemporary details. Gather around the table, linger in the garden or set out to explore Tuscany, with the freedom of having the entire property to yourselves."}
+      </p>
+      <a class="text-link" href={pathFor(lang, "house")}>
+        {it
+          ? "Scoprite la casa e le camere"
+          : "Discover the house and bedrooms"}{" "}
+        ↗
       </a>
-      <nav class="desktop-nav" aria-label={lang === 'it' ? 'Navigazione principale' : 'Main navigation'}>
-        {t.nav.slice(0, 3).map((label, i) => <a href={`#${sections[i]}`}>{label}</a>)}
-      </nav>
-      <div class="header-actions">
-        <nav class="language-nav" aria-label={lang === 'it' ? 'Lingua' : 'Language'}>
-          <a href="/" lang="it" hreflang="it" aria-current={lang === 'it' ? 'page' : undefined}>IT</a>
-          <span aria-hidden="true">/</span>
-          <a href="/en/" lang="en" hreflang="en" aria-current={lang === 'en' ? 'page' : undefined}>EN</a>
-        </nav>
-        <a class="header-contact" href="#contatti">{t.contact}<span aria-hidden="true">↗</span></a>
-        <details class="mobile-menu">
-          <summary aria-label={t.menu}><span></span><span></span></summary>
-          <nav aria-label={lang === 'it' ? 'Menu mobile' : 'Mobile menu'}>
-            {t.nav.map((label, i) => <a href={`#${sections[i]}`}>{label}</a>)}
-          </nav>
+    </div>
+    <figure class="editorial-photo">
+      <Image
+        src={house}
+        alt={
+          it
+            ? "Il casolare in pietra tra alberi e campi"
+            : "The stone farmhouse among trees and fields"
+        }
+        widths={[640, 960, 1440]}
+        sizes="(max-width:800px) 100vw, 48vw"
+        format="webp"
+      />
+      <figcaption>PALAZZOLO · ANGHIARI</figcaption>
+    </figure>
+  </section>
+  <section class="interior-story section-wrap" id="interni">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">
+          {it ? "IL RESTAURO, NEI DETTAGLI" : "A RESTORATION IN THE DETAILS"}
+        </p>
+        <h2>
+          {it ? "Dentro, una personalità" : "Inside, a character"}
+          <br />
+          <em>{it ? "che non si dimentica." : "to remember."}</em>
+        </h2>
+      </div>
+      <p>
+        {it
+          ? "Un banco da falegname che diventa il piano dei lavabi. La cucina contemporanea tra le pareti in pietra. Oggetti recuperati, materiali autentici e scelte che rendono ogni ambiente diverso."
+          : "A carpenter’s workbench becomes a vanity for bowl basins. A contemporary kitchen between stone walls. Reclaimed furniture, honest materials and thoughtful details give each room its own character."}
+      </p>
+    </div>
+    <div class="interior-duo">
+      <a href={`${pathFor(lang, "house")}#bagni`}>
+        <Image
+          src={bath}
+          alt={
+            it
+              ? "Il bagno con due lavabi a ciotola sul banco da falegname"
+              : "Bathroom with two bowl basins on a carpenter’s workbench"
+          }
+          widths={[640, 960, 1400]}
+          sizes="(max-width:800px) 100vw, 55vw"
+          format="webp"
+        />
+        <span>
+          {it
+            ? "Il banco da falegname, una nuova vita"
+            : "The workbench, a new life"}{" "}
+          ↗
+        </span>
+      </a>
+      <a href={pathFor(lang, "house")}>
+        <Image
+          src={kitchen}
+          alt={
+            it
+              ? "La cucina contemporanea con isola e pareti in pietra"
+              : "Contemporary kitchen with an island and stone walls"
+          }
+          widths={[480, 800, 1200]}
+          sizes="(max-width:800px) 100vw, 36vw"
+          format="webp"
+        />
+        <span>
+          {it
+            ? "La cucina, al centro della casa"
+            : "The kitchen, at the heart of the home"}{" "}
+          ↗
+        </span>
+      </a>
+    </div>
+    <a class="text-link" href={pathFor(lang, "gallery")}>
+      {it ? "Tutte le fotografie" : "All photographs"} ↗
+    </a>
+  </section>
+  <section class="outdoor-story">
+    <div class="outdoor-image">
+      <Image
+        src={garden}
+        alt={
+          it
+            ? "Il pergolato e il giardino riservati agli ospiti"
+            : "The pergola and garden reserved for guests"
+        }
+        widths={[640, 960, 1600]}
+        sizes="(max-width:800px) 100vw, 55vw"
+        format="webp"
+      />
+    </div>
+    <div class="outdoor-copy">
+      <p class="eyebrow">
+        {it ? "FUORI, SOLO IL VOSTRO RITMO" : "OUTSIDE, AT YOUR OWN PACE"}
+      </p>
+      <h2>
+        {it ? "La piscina. Il verde." : "The pool. The garden."}
+        <br />
+        <em>{it ? "La vostra tranquillità." : "Your own quiet corner."}</em>
+      </h2>
+      <p>
+        {it
+          ? "Un tuffo, un libro all’ombra, una cena che si allunga. Piscina, giardino e veranda sono riservati soltanto al gruppo che soggiorna: non accogliamo altri ospiti nello stesso periodo."
+          : "A swim, a book in the shade, an evening around the table. The pool, garden and veranda are reserved for your group: we do not host other guests during your stay."}
+      </p>
+      <a class="text-link" href={`${pathFor(lang, "house")}#piscina`}>
+        {it ? "Gli spazi all’aperto" : "Explore the outdoor spaces"} ↗
+      </a>
+    </div>
+  </section>
+  <section class="territory-preview section-wrap">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">{it ? "OLTRE IL CANCELLO" : "BEYOND THE GATE"}</p>
+        <h2>
+          {it ? "Una Toscana" : "A Tuscany"}
+          <br />
+          <em>{it ? "da vivere, fuori." : "to explore."}</em>
+        </h2>
+      </div>
+      <p>
+        {it
+          ? "A piedi o in bicicletta, tra vigna e olivi. E poi Anghiari, con i suoi vicoli e la valle che si apre sotto il borgo. La vacanza continua appena fuori casa."
+          : "On foot or by bicycle, among vines and olive trees. Then Anghiari, its stone lanes and the valley below. Your holiday continues just beyond the house."}
+      </p>
+    </div>
+    <a class="landscape-link" href={pathFor(lang, "experiences")}>
+      <Image
+        src={village}
+        alt={
+          it ? "Il borgo di Anghiari al calare della sera" : "Anghiari at dusk"
+        }
+        widths={[640, 960, 1440]}
+        sizes="90vw"
+        format="webp"
+      />
+      <span>
+        ANGHIARI · VALTIBERINA <b>↗</b>
+      </span>
+    </a>
+    <div class="experience-tags">
+      <span>{it ? "Passeggiate" : "Walking"}</span>
+      <span>{it ? "Bicicletta" : "Cycling"}</span>
+      <span>{it ? "Borghi e cultura" : "Villages and culture"}</span>
+      <span>{it ? "Vigna e olivi" : "Vines and olive trees"}</span>
+    </div>
+    <a class="text-link" href={pathFor(lang, "experiences")}>
+      {it
+        ? "Esplorate le esperienze e il territorio"
+        : "Explore experiences and the area"}{" "}
+      ↗
+    </a>
+  </section>
+  <Reviews lang={lang} compact />
+  <section class="faq section-wrap">
+    <div>
+      <p class="eyebrow">
+        {it ? "LE RISPOSTE, SUBITO" : "A FEW USEFUL ANSWERS"}
+      </p>
+      <h2>{it ? "Prima di partire." : "Before your stay."}</h2>
+    </div>
+    <div class="faq-list">
+      {(it
+        ? [
+            [
+              "La piscina e il giardino sono privati?",
+              "Sì. Casa, piscina, giardino e veranda sono a uso esclusivo del vostro gruppo per tutta la durata del soggiorno. Non sono presenti altri gruppi di ospiti.",
+            ],
+            [
+              "Si possono prenotare le singole camere?",
+              "Il soggiorno riguarda l’intero casolare: le quattro camere e i quattro bagni sono parte di un’unica struttura riservata a chi prenota.",
+            ],
+            [
+              "Come chiediamo disponibilità?",
+              "Scriveteci su WhatsApp o via email indicando date e composizione del gruppo. Potete anche consultare l’annuncio su Airbnb o Booking.com.",
+            ],
+          ]
+        : [
+            [
+              "Are the pool and garden private?",
+              "Yes. The house, pool, garden and veranda are exclusively for your group throughout your stay. No other groups of guests stay at the same time.",
+            ],
+            [
+              "Can we book individual bedrooms?",
+              "Bookings are for the whole farmhouse. Its four bedrooms and four bathrooms are part of a single property reserved for your group.",
+            ],
+            [
+              "How can we check availability?",
+              "Send us your dates and group details by WhatsApp or email. You can also view the listing on Airbnb or Booking.com.",
+            ],
+          ]
+      ).map(([q, a]) => (
+        <details>
+          <summary>
+            {q}
+            <span aria-hidden="true">+</span>
+          </summary>
+          <p>{a}</p>
         </details>
-      </div>
-    </header>
-
-    <main id="main">
-      <section class="hero" aria-labelledby="hero-title">
-        <Image class="hero-image" src={pool} alt={t.experiences[0].alt} widths={[640, 960, 1440, 1920, 2560]} sizes="100vw" format="webp" quality={85} loading="eager" fetchpriority="high" />
-        <div class="hero-shade"></div>
-        <div class="hero-top"><span class="eyebrow">{t.eyebrow}</span><span class="hero-coordinate">{lang === 'it' ? 'IL CASOLARE, TUTTO PER VOI' : 'THE FARMHOUSE, ALL YOURS'}</span></div>
-        <div class="hero-content">
-          <h1 id="hero-title">{t.hero1}<br /><em>{t.hero2}</em></h1>
-          <div class="hero-bottom"><p>{t.heroText}</p><a class="round-link" href="#casolare"><span>{t.heroCta}</span><span class="round-icon" aria-hidden="true">↓</span></a></div>
-        </div>
-        <span class="hero-side" aria-hidden="true">PALAZZOLO RESORT — ANGHIARI</span>
-      </section>
-
-      <div class="facts" aria-label={lang === 'it' ? 'Il casolare in breve' : 'The farmhouse at a glance'}>
-        {t.facts.map(([value, label]) => <div class="fact"><span class="fact-value">{value}</span><span>{label}</span></div>)}
-      </div>
-
-      <section class="intro section-wrap" id="casolare" aria-labelledby="intro-title">
-        <div class="intro-copy">
-          <p class="eyebrow olive">{t.introLabel}</p>
-          <h2 id="intro-title" class="line-title">{t.introTitle}</h2>
-          <p class="body-large">{t.introText}</p><p>{t.introText2}</p>
-          <a class="text-link" href="#contatti">{t.introLink}<span aria-hidden="true">↗</span></a>
-        </div>
-        <figure class="intro-figure">
-          <Image src={house} alt={t.houseAlt} widths={[640, 960, 1280]} sizes="(max-width: 760px) 100vw, 48vw" format="webp" loading="lazy" />
-          <figcaption><span>PALAZZOLO</span><span>{lang === 'it' ? 'Una storia di famiglia' : 'A family story'}</span></figcaption>
-          <span class="image-seal" aria-hidden="true">TOSCANA<br /><i>con amore</i><br />ANGHIARI</span>
-        </figure>
-      </section>
-
-      <section class="spaces section-wrap" aria-labelledby="spaces-title">
-        <div class="section-heading"><div><p class="eyebrow olive">{t.detailLabel}</p><h2 id="spaces-title" class="line-title">{t.detailTitle}</h2></div><p>{t.detailText}</p></div>
-        <div class="spaces-grid">
-          <figure class="kitchen-photo"><Image src={kitchen} alt={t.kitchenAlt} widths={[640, 960, 1280]} sizes="(max-width: 760px) 100vw, 58vw" format="webp" loading="lazy" /></figure>
-          <div class="bedrooms"><div class="bedroom-images"><Image src={suite} alt={t.suiteAlt} widths={[320, 640]} sizes="(max-width: 760px) 44vw, 18vw" format="webp" loading="lazy" /><Image src={bedroom} alt={t.roomAlt} widths={[320, 640]} sizes="(max-width: 760px) 44vw, 18vw" format="webp" loading="lazy" /></div><div class="bedrooms-copy"><span class="tiny-label">SUITE · BARBOLANA · CAMERA DEI NONNI · SUPERIOR</span><h3>{t.roomLabel}</h3><p>{t.roomText}</p></div></div>
-        </div>
-      </section>
-
-      <section class="life" id="vita" aria-labelledby="life-title"><div class="section-wrap">
-        <div class="section-heading"><div><p class="eyebrow olive">{t.lifeLabel}</p><h2 id="life-title" class="line-title">{t.lifeTitle}</h2></div><span class="sun-mark" aria-hidden="true">☼</span></div>
-        <div class="experience-grid">{t.experiences.map((item, i) => <article class="experience"><div class="experience-photo"><Image src={experienceImages[i]} alt={item.alt} widths={[480, 800, 1200]} sizes="(max-width: 760px) 100vw, 31vw" format="webp" loading="lazy" /></div><div class="experience-title"><span>{item.number}</span><h3>{item.title}</h3></div><p>{item.text}</p></article>)}</div>
-      </div></section>
-
-      <section class="manifesto" aria-label={t.quoteLabel}><span class="botanical" aria-hidden="true">✳</span><p class="eyebrow">{t.quoteLabel}</p><p class="manifesto-quote line-title">{t.quote}</p><span class="manifesto-sign">Palazzolo Resort</span></section>
-
-      <section class="location section-wrap" id="territorio" aria-labelledby="location-title"><div class="location-image"><Image src={village} alt={t.locationAlt} widths={[640, 1038]} sizes="(max-width: 760px) 100vw, 48vw" format="webp" loading="lazy" /></div><div class="location-copy"><p class="eyebrow olive">{t.locationLabel}</p><h2 id="location-title" class="line-title">{t.locationTitle}</h2><p>{t.locationText}</p><div class="location-address"><span class="pin" aria-hidden="true">⌖</span><div><strong>Palazzolo Resort</strong><br />Via Tavernelle, 14<br />52031 Anghiari · Arezzo</div></div><a class="text-link" href={site.maps} target="_blank" rel="noopener noreferrer">{t.mapCta}<span aria-hidden="true">↗</span></a></div></section>
-
-      <section class="faq section-wrap" aria-labelledby="faq-title"><div><p class="eyebrow olive">{t.faqLabel}</p><h2 id="faq-title">{t.faqTitle}</h2></div><div class="faq-list">{t.faqs.map(([question, answer]) => <details><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-
-      <section class="contact-section" id="contatti" aria-labelledby="contact-title"><div class="section-wrap contact-inner"><p class="eyebrow">{t.bookingLabel}</p><h2 id="contact-title" class="line-title">{t.bookingTitle}</h2><p>{t.bookingText}</p><div class="contact-buttons"><a class="button button-light" href={whatsapp} target="_blank" rel="noopener noreferrer">{t.whatsapp}<span aria-hidden="true">↗</span></a><a class="button button-outline" href={`mailto:${site.email}`}>{t.email}<span aria-hidden="true">↗</span></a></div><div class="platforms"><span>{t.platforms}</span><div><a href={site.airbnb} target="_blank" rel="noopener noreferrer">Airbnb <span aria-hidden="true">↗</span></a><a href={site.booking} target="_blank" rel="noopener noreferrer">Booking.com <span aria-hidden="true">↗</span></a></div></div></div><span class="contact-decoration" aria-hidden="true">P</span></section>
-    </main>
-
-    <footer class="site-footer section-wrap"><div class="footer-top"><div><a class="brand footer-brand" href={lang === 'it' ? '/' : '/en/'}><span class="brand-name">palazzolo<span class="brand-star" aria-hidden="true">✳</span></span><span class="brand-sub">RESORT · TOSCANA</span></a><p>{t.footerText}</p></div><address>Via Tavernelle, 14<br />52031 Anghiari (AR), Italia<br /><a href={site.maps} target="_blank" rel="noopener noreferrer">{t.directions} ↗</a></address><div class="footer-contacts"><a href={`mailto:${site.email}`}>{site.email}</a><a href={`tel:${site.phoneHref}`}>{site.phone}</a></div></div><div class="footer-bottom"><span>© {new Date().getFullYear()} Palazzolo Resort</span><a href="https://www.palazzoloresort.it/terms-and-conditions/" target="_blank" rel="noopener noreferrer">{t.terms} ↗</a><a href="#inizio">{t.back} ↑</a></div></footer>
-    <script>
-      const menu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
-      menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { menu.open = false; }));
-      document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); } });
-      document.addEventListener('click', event => { if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false; });
-    </script>
-  </body>
-</html>
+      ))}
+    </div>
+  </section>
+</Layout>

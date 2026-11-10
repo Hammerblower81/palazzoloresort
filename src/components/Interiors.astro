@@ -1,0 +1,89 @@
+---
+import { Image, getImage } from "astro:assets";
+import { photos, stayCopy } from "../data/stay";
+import type { Language } from "../data/site";
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+const t = stayCopy[lang];
+const kitchen = photos.find((photo) => photo.id === "cucina")!;
+const suite = photos.find((photo) => photo.id === "suite-vasca")!;
+const full = await Promise.all(
+  [kitchen, suite].map((photo) =>
+    getImage({
+      src: photo.image,
+      width: Math.min(photo.image.width, 1600),
+      format: "webp",
+      quality: 85,
+    }),
+  ),
+);
+---
+
+<section
+  class="interiors section-wrap"
+  id="interni"
+  aria-labelledby="interiors-title"
+>
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow olive">{t.interiorsLabel}</p>
+      <h2 id="interiors-title" class="line-title">
+        {t.interiorsTitle}
+      </h2>
+    </div>
+    <p>{t.interiorsText}</p>
+  </div>
+  <div class="interiors-composition">
+    <figure class="interior-kitchen">
+      <a
+        href={full[0].src}
+        data-open-photo={kitchen.id}
+        aria-label={`${t.openPhoto}: ${kitchen.caption[lang]}`}
+      >
+        <Image
+          src={kitchen.image}
+          alt={kitchen.alt[lang]}
+          widths={[480, 800, 1200, 1600]}
+          sizes="(max-width: 760px) 100vw, 60vw"
+          format="webp"
+          loading="lazy"
+        />
+        <span class="photo-expand" aria-hidden="true">
+          ↗
+        </span>
+      </a>
+      <figcaption>{t.kitchenCaption}</figcaption>
+    </figure>
+    <figure class="interior-suite">
+      <a
+        href={full[1].src}
+        data-open-photo={suite.id}
+        aria-label={`${t.openPhoto}: ${suite.caption[lang]}`}
+      >
+        <Image
+          src={suite.image}
+          alt={suite.alt[lang]}
+          widths={[480, 800, 1024]}
+          sizes="(max-width: 760px) 78vw, 33vw"
+          format="webp"
+          loading="lazy"
+        />
+        <span class="photo-expand" aria-hidden="true">
+          ↗
+        </span>
+      </a>
+      <figcaption>{t.suiteCaption}</figcaption>
+    </figure>
+  </div>
+  <div class="restoration-details">
+    {t.details.map(([title, description], index) => (
+      <div>
+        <span class="eyebrow olive">0{index + 1}</span>
+        <h3>{title}</h3>
+        <p>{description}</p>
+      </div>
+    ))}
+  </div>
+</section>

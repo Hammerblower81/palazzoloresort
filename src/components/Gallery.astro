@@ -1,0 +1,281 @@
+---
+import { Image, getImage } from "astro:assets";
+import { photos, stayCopy } from "../data/stay";
+import type { Language } from "../data/site";
+interface Props {
+  lang: Language;
+  showHeading?: boolean;
+}
+const { lang, showHeading = true } = Astro.props;
+const t = stayCopy[lang];
+const items = await Promise.all(
+  photos.map(async (photo) => ({
+    ...photo,
+    full: await getImage({
+      src: photo.image,
+      width: Math.min(photo.image.width, 1600),
+      format: "webp",
+      quality: 85,
+    }),
+  })),
+);
+---
+
+<section
+  class="gallery-section section-wrap"
+  id="galleria"
+  aria-labelledby={showHeading ? "gallery-title" : undefined}
+  aria-label={!showHeading ? t.fullScreenLabel : undefined}
+>
+  {showHeading && (
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow olive">{t.galleryLabel}</p>
+        <h2 id="gallery-title" class="line-title">
+          {t.galleryTitle}
+        </h2>
+      </div>
+      <p>{t.galleryIntro}</p>
+    </div>
+  )}
+  <div class="gallery-toolbar" hidden>
+    <div class="gallery-filters" role="group" aria-label={t.filtersLabel}>
+      {Object.entries(t.categories).map(([key, label]) => (
+        <button
+          type="button"
+          data-photo-filter={key}
+          aria-pressed={key === "all" ? "true" : "false"}
+          aria-controls="gallery-grid"
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+    <span
+      class="gallery-status"
+      role="status"
+      aria-live="polite"
+      data-count-label={t.photoCount}
+      data-count-singular={t.photoSingular}
+    ></span>
+  </div>
+  <div class="gallery-grid" id="gallery-grid" data-filter="all">
+    {items.map((photo, index) => (
+      <a
+        class:list={["gallery-tile", { "gallery-featured": index === 0 }]}
+        href={photo.full.src}
+        data-gallery-photo={photo.id}
+        data-photo-category={photo.category}
+        data-photo-caption={photo.caption[lang]}
+        data-photo-alt={photo.alt[lang]}
+        aria-label={`${t.openPhoto}: ${photo.caption[lang]}`}
+      >
+        <Image
+          src={photo.image}
+          alt={photo.alt[lang]}
+          widths={[360, 640, 1024]}
+          sizes={
+            index === 0
+              ? "(max-width: 760px) 100vw, 60vw"
+              : "(max-width: 760px) 100vw, 30vw"
+          }
+          format="webp"
+          loading="lazy"
+        />
+        <span class="gallery-caption">
+          {photo.caption[lang]}
+          <span aria-hidden="true">↗</span>
+        </span>
+      </a>
+    ))}
+  </div>
+  <div class="gallery-more-wrap">
+    <button type="button" class="gallery-more" hidden>
+      <span>{t.more}</span>
+      <span class="gallery-more-count"></span>
+      <span aria-hidden="true">↓</span>
+    </button>
+  </div>
+  <dialog class="photo-dialog" aria-labelledby="photo-dialog-title">
+    <h2 class="visually-hidden" id="photo-dialog-title">
+      {t.fullScreenLabel}
+    </h2>
+    <div class="photo-dialog-toolbar">
+      <span class="eyebrow">PALAZZOLO RESORT</span>
+      <button type="button" class="photo-close" autofocus>
+        {t.close}
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="photo-stage">
+      <p
+        class="photo-loading"
+        role="status"
+        hidden
+        data-loading={t.loading}
+        data-error={t.loadError}
+      ></p>
+      <button type="button" class="photo-previous" aria-label={t.previous}>
+        <span aria-hidden="true">←</span>
+      </button>
+      <img class="photo-large" alt="" />
+      <button type="button" class="photo-next" aria-label={t.next}>
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
+    <div class="photo-dialog-footer" aria-live="polite">
+      <span class="photo-caption"></span>
+      <span class="photo-counter"></span>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>(".gallery-section");
+  const grid = section?.querySelector<HTMLElement>(".gallery-grid");
+  const links = Array.from(
+    section?.querySelectorAll<HTMLAnchorElement>("[data-gallery-photo]") ?? [],
+  );
+  const filters = Array.from(
+    section?.querySelectorAll<HTMLButtonElement>("[data-photo-filter]") ?? [],
+  );
+  const toolbar = section?.querySelector<HTMLElement>(".gallery-toolbar");
+  const status = section?.querySelector<HTMLElement>(".gallery-status");
+  const more = section?.querySelector<HTMLButtonElement>(".gallery-more");
+  const moreCount = more?.querySelector<HTMLElement>(".gallery-more-count");
+  const dialog = section?.querySelector<HTMLDialogElement>(".photo-dialog");
+  const image = dialog?.querySelector<HTMLImageElement>(".photo-large");
+  const caption = dialog?.querySelector<HTMLElement>(".photo-caption");
+  const counter = dialog?.querySelector<HTMLElement>(".photo-counter");
+  const previous = dialog?.querySelector<HTMLButtonElement>(".photo-previous");
+  const next = dialog?.querySelector<HTMLButtonElement>(".photo-next");
+  const loading = dialog?.querySelector<HTMLElement>(".photo-loading");
+  const stage = dialog?.querySelector<HTMLElement>(".photo-stage");
+
+  let category = "all";
+  let limit = 8;
+  let selected = 0;
+  let album = links;
+  let returnFocus: HTMLElement | null = null;
+  const matchingPhotos = () =>
+    links.filter(
+      (link) => category === "all" || link.dataset.photoCategory === category,
+    );
+
+  function refreshGallery() {
+    const matching = matchingPhotos();
+    links.forEach((link) => {
+      link.hidden = true;
+    });
+    matching.slice(0, limit).forEach((link) => {
+      link.hidden = false;
+    });
+    if (status)
+      status.textContent = `${Math.min(limit, matching.length)} / ${matching.length} ${matching.length === 1 ? status.dataset.countSingular : status.dataset.countLabel}`;
+    if (more) more.hidden = matching.length <= limit;
+    if (moreCount)
+      moreCount.textContent = `(${Math.max(0, matching.length - limit)})`;
+    if (grid) grid.dataset.filter = category;
+    filters.forEach((filter) => {
+      filter.setAttribute(
+        "aria-pressed",
+        String(filter.dataset.photoFilter === category),
+      );
+    });
+  }
+
+  filters.forEach((filter) =>
+    filter.addEventListener("click", () => {
+      category = filter.dataset.photoFilter ?? "all";
+      limit = 8;
+      refreshGallery();
+    }),
+  );
+
+  more?.addEventListener("click", () => {
+    const firstNew = matchingPhotos()[limit];
+    limit += 8;
+    refreshGallery();
+    firstNew?.focus({ preventScroll: true });
+  });
+
+  function showPhoto(index: number) {
+    if (!image || !album.length) return;
+    selected = (index + album.length) % album.length;
+    const photo = album[selected];
+    image.classList.add("is-loading");
+    stage?.setAttribute("aria-busy", "true");
+    if (loading) {
+      loading.hidden = false;
+      loading.textContent = loading.dataset.loading ?? "";
+    }
+    image.src = photo.href;
+    image.alt = photo.dataset.photoAlt ?? "";
+    if (caption) caption.textContent = photo.dataset.photoCaption ?? "";
+    if (counter) counter.textContent = `${selected + 1} / ${album.length}`;
+    if (previous) previous.disabled = album.length < 2;
+    if (next) next.disabled = album.length < 2;
+    if (image.complete && image.naturalWidth > 0) finishLoading();
+  }
+
+  function finishLoading() {
+    image?.classList.remove("is-loading");
+    stage?.setAttribute("aria-busy", "false");
+    if (loading) loading.hidden = true;
+  }
+  image?.addEventListener("load", finishLoading);
+  image?.addEventListener("error", () => {
+    stage?.setAttribute("aria-busy", "false");
+    if (loading) {
+      loading.hidden = false;
+      loading.textContent = loading.dataset.error ?? "";
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      !(event.target instanceof Element) ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    const trigger = event.target.closest<HTMLAnchorElement>(
+      "a[data-gallery-photo], a[data-open-photo]",
+    );
+    if (!trigger || !dialog || typeof dialog.showModal !== "function") return;
+    const id = trigger.dataset.galleryPhoto ?? trigger.dataset.openPhoto;
+    album = trigger.dataset.galleryPhoto ? matchingPhotos() : links;
+    const index = album.findIndex((photo) => photo.dataset.galleryPhoto === id);
+    if (index < 0) return;
+    event.preventDefault();
+    returnFocus = trigger;
+    showPhoto(index);
+    dialog.showModal();
+  });
+
+  previous?.addEventListener("click", () => showPhoto(selected - 1));
+  next?.addEventListener("click", () => showPhoto(selected + 1));
+  dialog
+    ?.querySelector(".photo-close")
+    ?.addEventListener("click", () => dialog.close());
+  dialog?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      event.preventDefault();
+      showPhoto(selected + (event.key === "ArrowRight" ? 1 : -1));
+    }
+  });
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("close", () =>
+    returnFocus?.focus({ preventScroll: true }),
+  );
+
+  if (toolbar && links.length) {
+    toolbar.hidden = false;
+    refreshGallery();
+  }
+</script>

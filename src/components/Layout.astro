@@ -1,0 +1,243 @@
+---
+import { site, type Language } from "../data/site";
+import { pageKeys, pathFor, labels, type PageKey } from "../data/pages";
+import pool from "../assets/piscina.jpg";
+import "../styles/site.css";
+import "../styles/stay.css";
+import "../styles/refresh.css";
+interface Props {
+  lang: Language;
+  page?: PageKey;
+  title?: string;
+  description?: string;
+}
+const { lang, page = "home", title, description } = Astro.props;
+const it = lang === "it";
+const indexable = import.meta.env.PUBLIC_INDEXABLE === "true";
+const canonical = new URL(pathFor(lang, page), Astro.site);
+const heading =
+  title ||
+  (it
+    ? "Il vostro casolare in Toscana, in esclusiva"
+    : "Your private farmhouse in Tuscany");
+const meta =
+  description ||
+  (it
+    ? "Palazzolo Resort ad Anghiari: quattro camere, quattro bagni, piscina e giardino riservati a un solo gruppo di ospiti alla volta."
+    : "Palazzolo Resort in Anghiari: four bedrooms, four bathrooms, a pool and garden exclusively for one group of guests at a time.");
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f7f5ef" />
+    <title>{heading} | Palazzolo Resort</title>
+    <meta name="description" content={meta} />
+    <meta
+      name="robots"
+      content={
+        indexable ? "index,follow,max-image-preview:large" : "noindex,nofollow"
+      }
+    />
+    {indexable && (
+      <>
+        <link rel="canonical" href={canonical} />
+        {(["it", "en"] as const).map((l) => (
+          <link
+            rel="alternate"
+            hreflang={l}
+            href={new URL(pathFor(l, page), Astro.site)}
+          />
+        ))}
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(pathFor("it", page), Astro.site)}
+        />
+      </>
+    )}
+    <meta property="og:title" content={`${heading} | Palazzolo Resort`} />
+    <meta property="og:description" content={meta} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={it ? "it_IT" : "en_GB"} />
+    <meta property="og:image" content={new URL(pool.src, Astro.site)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body id="inizio" class:list={[`page-${page}`]}>
+    <a class="skip-link" href="#main">
+      {it ? "Vai al contenuto" : "Skip to content"}
+    </a>
+    <header class="site-header">
+      <a
+        class="brand"
+        href={pathFor(lang, "home")}
+        aria-label="Palazzolo Resort — home"
+      >
+        <img
+          src="/palazzolo-logo.svg"
+          width="1417"
+          height="471"
+          alt="Palazzolo Resort"
+        />
+      </a>
+      <nav
+        class="desktop-nav"
+        aria-label={it ? "Navigazione principale" : "Main navigation"}
+      >
+        {pageKeys
+          .filter((key) => key !== "home" && key !== "contact")
+          .map((key) => (
+            <a
+              href={pathFor(lang, key)}
+              aria-current={page === key ? "page" : undefined}
+            >
+              {labels[lang][key]}
+            </a>
+          ))}
+      </nav>
+      <div class="header-actions">
+        <nav class="language-nav" aria-label={it ? "Lingua" : "Language"}>
+          <a
+            href={pathFor("it", page)}
+            aria-current={it ? "page" : undefined}
+            lang="it"
+          >
+            IT
+          </a>
+          <span>/</span>
+          <a
+            href={pathFor("en", page)}
+            aria-current={!it ? "page" : undefined}
+            lang="en"
+          >
+            EN
+          </a>
+        </nav>
+        <a class="header-contact" href={pathFor(lang, "contact")}>
+          {it ? "Contattaci" : "Get in touch"} <span aria-hidden="true">↗</span>
+        </a>
+        <details class="mobile-menu">
+          <summary aria-label={it ? "Apri il menu" : "Open menu"}>
+            <span></span>
+            <span></span>
+          </summary>
+          <nav aria-label={it ? "Menu mobile" : "Mobile menu"}>
+            {pageKeys.map((key) => (
+              <a
+                href={pathFor(lang, key)}
+                aria-current={page === key ? "page" : undefined}
+              >
+                {labels[lang][key]}
+              </a>
+            ))}
+          </nav>
+        </details>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    {page !== "contact" && (
+      <section class="contact-section" aria-labelledby="stay-contact-title">
+        <div class="section-wrap contact-inner">
+          <div>
+            <p class="eyebrow">
+              {it ? "IL VOSTRO PROSSIMO SOGGIORNO" : "YOUR NEXT STAY"}
+            </p>
+            <h2 id="stay-contact-title">
+              {it
+                ? "Vi aspettiamo a Palazzolo."
+                : "We look forward to welcoming you."}
+            </h2>
+            <p>
+              {it
+                ? "Raccontateci quando vorreste venire e con chi. Vi aiutiamo a capire se la casa è quella giusta per la vostra vacanza."
+                : "Tell us when you would like to visit and who is coming. We will help you decide whether the house is right for your holiday."}
+            </p>
+          </div>
+          <div class="contact-buttons">
+            <a
+              class="button button-light"
+              href={site.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {it ? "Scrivici su WhatsApp" : "Message us on WhatsApp"} ↗
+            </a>
+            <a class="contact-mail" href={`mailto:${site.email}`}>
+              {site.email}
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+    <footer class="site-footer section-wrap">
+      <div class="footer-top">
+        <div>
+          <a class="brand" href={pathFor(lang, "home")}>
+            <img
+              src="/palazzolo-logo.svg"
+              width="1417"
+              height="471"
+              alt="Palazzolo Resort"
+              loading="lazy"
+            />
+          </a>
+          <p>
+            {it
+              ? "Una casa di famiglia, tutta per voi."
+              : "A family home, all yours."}
+          </p>
+        </div>
+        <address>
+          Via Tavernelle, 14
+          <br />
+          52031 Anghiari (AR), Italia
+          <br />
+          <a href={site.maps} target="_blank" rel="noopener noreferrer">
+            {it ? "Come arrivare" : "Get directions"} ↗
+          </a>
+        </address>
+        <div class="footer-contacts">
+          <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <a href={pathFor(lang, "reviews")}>{labels[lang].reviews} ↗</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© {new Date().getFullYear()} Palazzolo Resort</span>
+        <a
+          href="https://www.palazzoloresort.it/terms-and-conditions/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {it ? "Termini e condizioni" : "Terms and conditions"} ↗
+        </a>
+        <a href="#inizio">{it ? "Torna in alto" : "Back to top"} ↑</a>
+      </div>
+    </footer>
+    <div class="mobile-contact">
+      <a href={pathFor(lang, "contact")}>
+        {it ? "Chiedi disponibilità" : "Ask about availability"}
+      </a>
+      <a href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+        WhatsApp ↗
+      </a>
+    </div>
+    <script>
+      const menu = document.querySelector<HTMLDetailsElement>(".mobile-menu");
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && menu?.open) {
+          menu.open = false;
+          menu.querySelector("summary")?.focus();
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (menu?.open && e.target instanceof Node && !menu.contains(e.target))
+          menu.open = false;
+      });
+    </script>
+  </body>
+</html>

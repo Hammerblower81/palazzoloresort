@@ -1,8 +1,8 @@
 # Palazzolo Resort
 
-Prima proposta del nuovo sito vetrina, in italiano e inglese. Astro genera pagine statiche: non serve un server Node in produzione, un database o un pannello WordPress.
+Sito vetrina in sei pagine per lingua, in italiano e inglese. Astro genera pagine statiche: non serve un server Node in produzione, un database o un pannello WordPress.
 
-Questa versione è locale. Nessun dominio è stato modificato, nessun account creato e nessun sito pubblicato.
+La prima versione è pubblicata su https://palazzoloresort.pages.dev tramite il repository personale https://github.com/Hammerblower81/palazzoloresort. I domini Aruba non sono ancora collegati al nuovo sito. Le modifiche di questa revisione a struttura, testi, logo, esperienze e recensioni sono locali e attendono la revisione prima del push.
 
 ## Avvio
 
@@ -25,15 +25,20 @@ La build produce `dist/`, pubblicabile su un servizio per siti statici. Non cari
 
 ## Dove modificare le cose
 
-| Contenuto                                                 | File                        |
-| --------------------------------------------------------- | --------------------------- |
-| Testi italiani e inglesi, contatti, link Booking e Airbnb | `src/data/site.ts`          |
-| Struttura della pagina e componenti visuali               | `src/components/Home.astro` |
-| Colori, tipografia, spazi e adattamento mobile            | `src/styles/site.css`       |
-| Foto originali, scaricate dal sito della struttura        | `src/assets/`               |
-| Caratteri serviti localmente e relative licenze OFL       | `public/fonts/`             |
-| Indirizzo finale e configurazione Astro                   | `astro.config.mjs`          |
-| Reindirizzamenti dalle vecchie pagine WordPress           | `public/_redirects`         |
+Per camere, galleria e nuove fotografie, vedi la [guida ai contenuti](docs/CONTENUTI.md).
+
+| Contenuto                                           | File                                                           |
+| --------------------------------------------------- | -------------------------------------------------------------- |
+| Contatti, link Booking e Airbnb                     | `src/data/site.ts`                                             |
+| Percorsi delle pagine ed esperienze IT/EN           | `src/data/pages.ts`                                            |
+| Valutazioni, fonti ed estratti delle recensioni     | `src/data/reviews.ts`                                          |
+| Home e pagine interne                               | `src/components/Home.astro`, `src/components/DetailPage.astro` |
+| Menu, lingua, contatti e footer                     | `src/components/Layout.astro`                                  |
+| Colori, tipografia, spazi e adattamento mobile      | `src/styles/site.css`                                          |
+| Foto originali, scaricate dal sito della struttura  | `src/assets/`                                                  |
+| Caratteri serviti localmente e relative licenze OFL | `public/fonts/`                                                |
+| Indirizzo finale e configurazione Astro             | `astro.config.mjs`                                             |
+| Reindirizzamenti dalle vecchie pagine WordPress     | `public/_redirects`                                            |
 
 Le immagini sono importate da Astro, che le ottimizza e genera WebP in più risoluzioni durante la build. Testi e foto non dipendono dal sito WordPress una volta pubblicati. Il sito non incorpora mappe, widget di prenotazione o analytics di terzi: i visitatori aprono i servizi esterni solo seguendo i relativi link.
 
@@ -49,7 +54,7 @@ Il flusso previsto è:
 
 Crea un repository GitHub o GitLab nel tuo account e carica il contenuto di questa cartella, compreso `package-lock.json`. `.gitignore` esclude dipendenze, build, file locali e variabili d'ambiente.
 
-Non è ancora stato inizializzato un repository né collegato un account: lo faremo insieme quando scegli dove tenerlo.
+Il repository è già inizializzato, collegato a GitHub come `origin` e integrato con Cloudflare Pages. Le istruzioni seguenti descrivono la configurazione e i successivi passaggi sui domini.
 
 ### 2. Prima pubblicazione su Cloudflare Pages
 

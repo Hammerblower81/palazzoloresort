@@ -1,0 +1,124 @@
+/* Readable type for the retained room and gallery components. */
+.interiors .section-heading {
+  padding-top: 0;
+}
+.restoration-details p,
+.room-description {
+  font-size: 17px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 60ch;
+}
+.interiors-composition figcaption {
+  font-size: 13px;
+}
+.room-card-heading > span {
+  font-size: 16px;
+}
+.room-specs dt {
+  font-size: 11px;
+}
+.room-specs dd {
+  font-size: 15px;
+}
+.room-number {
+  font-size: 13px;
+}
+.gallery-filters button,
+.gallery-more {
+  font-size: 14px;
+  min-height: 46px;
+}
+.gallery-status {
+  font-size: 13px;
+}
+.gallery-caption {
+  font-size: 13px;
+}
+.photo-dialog button {
+  font-size: 14px;
+}
+.photo-dialog-footer {
+  font-size: 15px;
+}
+.photo-counter {
+  font-size: 13px;
+}
+.photo-loading {
+  font-size: 16px;
+}
+.page-gallery .gallery-section {
+  padding-top: 0;
+}
+.page-reviews .reviews-section {
+  padding-top: 0;
+}
+.rooms-section {
+  margin-top: 0;
+}
+.room-description {
+  margin-top: 18px;
+}
+.interiors {
+  padding-top: 0;
+}
+.page-house .interiors {
+  padding-bottom: 80px;
+}
+@media (max-width: 1100px) {
+  .header-contact {
+    display: block;
+  }
+}
+@media (max-width: 800px) {
+  .header-contact {
+    display: none;
+  }
+  .room-description,
+  .restoration-details p {
+    font-size: 16px;
+  }
+  .room-specs dt {
+    font-size: 11px;
+  }
+  .room-specs dd {
+    font-size: 14px;
+  }
+  .gallery-filters button {
+    font-size: 13px;
+  }
+  .gallery-caption {
+    font-size: 12px;
+  }
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gallery-featured {
+    grid-column: 1/-1;
+  }
+  .photo-dialog-footer {
+    font-size: 13px;
+  }
+  .photo-dialog-toolbar .eyebrow {
+    font-size: 10px;
+  }
+}
+@media (max-width: 440px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+  .gallery-tile img,
+  .gallery-featured img {
+    height: auto;
+    aspect-ratio: 1.25;
+  }
+}
+
+.guest-quotes figure {
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+}
+.guest-quotes figcaption {
+  margin-top: 18px;
+  line-height: 1.7;
+}

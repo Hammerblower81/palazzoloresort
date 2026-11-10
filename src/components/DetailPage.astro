@@ -1,0 +1,354 @@
+---
+import { Image } from "astro:assets";
+import Layout from "./Layout.astro";
+import Rooms from "./Rooms.astro";
+import Gallery from "./Gallery.astro";
+import Interiors from "./Interiors.astro";
+import Reviews from "./Reviews.astro";
+import { site, type Language } from "../data/site";
+import { labels, pathFor, experienceCopy, type PageKey } from "../data/pages";
+import house from "../assets/casolare.jpg";
+import bath from "../assets/bagno-falegname.jpg";
+import pool from "../assets/piscina-giorno.jpg";
+import garden from "../assets/giardino.jpg";
+import village from "../assets/anghiari-borgo.jpg";
+interface Props {
+  lang: Language;
+  page: Exclude<PageKey, "home">;
+}
+const { lang, page } = Astro.props;
+const it = lang === "it";
+const titles = {
+  house: it ? "Il casolare, tutto per voi." : "The farmhouse, all yours.",
+  experiences: it
+    ? "Fuori casa, dentro la Toscana."
+    : "Step outside, into Tuscany.",
+  gallery: it ? "Uno sguardo a Palazzolo." : "A closer look at Palazzolo.",
+  reviews: it ? "Le esperienze degli ospiti." : "Our guests’ experiences.",
+  contact: it
+    ? "Iniziamo dalla vostra vacanza."
+    : "Let’s talk about your holiday.",
+};
+const intros = {
+  house: it
+    ? "Una casa di famiglia restaurata con cura. Quattro camere, quattro bagni e spazi per ritrovarvi, dentro e fuori. Sempre riservati soltanto al vostro gruppo."
+    : "A carefully restored family home. Four bedrooms, four bathrooms and places to relax, indoors and out. Always reserved exclusively for your group.",
+  experiences: it
+    ? "Passeggiate, giri in bici e borghi da scoprire. Tra vigna, olivi e le colline di Anghiari, scegliete ogni giorno un modo diverso di vivere il territorio."
+    : "Walking, cycling and villages to discover. Among vines, olive trees and the hills of Anghiari, choose a different way to explore each day.",
+  gallery: it
+    ? "La pietra, gli arredi, la luce nelle camere. Esplorate le fotografie degli interni, della piscina e del giardino."
+    : "Stone, furniture and light in the bedrooms. Explore photographs of the interiors, pool and garden.",
+  reviews: it
+    ? "Un altro modo per conoscere Palazzolo: attraverso le parole e le valutazioni di chi ci ha scelto."
+    : "Another way to discover Palazzolo: through the words and ratings of the guests who chose to stay here.",
+  contact: it
+    ? "Per le date, la disposizione della casa o un consiglio sul territorio: scriveteci. Vi rispondiamo direttamente."
+    : "For dates, the layout of the house or advice about the area, get in touch. You will hear directly from us.",
+};
+const experienceImages = [house, pool, village, garden];
+---
+
+<Layout lang={lang} page={page} title={titles[page]} description={intros[page]}>
+  <section class="page-intro section-wrap">
+    <a class="breadcrumb" href={pathFor(lang, "home")}>
+      Home
+    </a>
+    <span class="breadcrumb-divider">/</span>
+    <span class="breadcrumb">{labels[lang][page]}</span>
+    <p class="eyebrow">PALAZZOLO RESORT · ANGHIARI</p>
+    <h1>{titles[page]}</h1>
+    <p class="lead">{intros[page]}</p>
+    {page === "house" && (
+      <div class="page-facts">
+        <span>{it ? "4 camere" : "4 bedrooms"}</span>
+        <span>{it ? "4 bagni" : "4 bathrooms"}</span>
+        <span>{it ? "Piscina privata" : "Private pool"}</span>
+        <span>{it ? "Un solo gruppo" : "One group only"}</span>
+      </div>
+    )}
+  </section>
+  {page === "house" && (
+    <>
+      <div class="wide-photo section-wrap">
+        <Image
+          src={house}
+          alt={
+            it
+              ? "Il casolare in pietra circondato dalla campagna"
+              : "The stone farmhouse surrounded by countryside"
+          }
+          widths={[640, 960, 1440, 1920]}
+          sizes="90vw"
+          format="webp"
+          loading="eager"
+        />
+      </div>
+      <Interiors lang={lang} />
+      <section class="editorial section-wrap bathroom-story" id="bagni">
+        <figure class="editorial-photo">
+          <Image
+            src={bath}
+            alt={
+              it
+                ? "Lavabi a ciotola sul banco da falegname nel bagno"
+                : "Bowl basins on a carpenter’s workbench in the bathroom"
+            }
+            widths={[640, 960, 1440]}
+            sizes="(max-width:800px) 100vw, 52vw"
+            format="webp"
+          />
+          <figcaption>
+            {it
+              ? "IL BAGNO · IL BANCO DA FALEGNAME"
+              : "THE BATHROOM · THE CARPENTER’S WORKBENCH"}
+          </figcaption>
+        </figure>
+        <div class="editorial-copy">
+          <p class="eyebrow">{it ? "QUATTRO BAGNI" : "FOUR BATHROOMS"}</p>
+          <h2>
+            {it ? "Il fascino delle cose" : "The charm of things"}
+            <br />
+            <em>{it ? "che cambiano vita." : "given a new life."}</em>
+          </h2>
+          <p class="lead">
+            {it
+              ? "Il vecchio banco da falegname sostiene due lavabi a ciotola. Il legno segnato dal tempo incontra forme essenziali: è uno dei dettagli che raccontano meglio il nostro modo di restaurare."
+              : "An old carpenter’s workbench holds two bowl basins. Time-worn wood meets simple forms: a detail that captures our approach to restoring the house."}
+          </p>
+          <p>
+            {it
+              ? "Il casolare dispone complessivamente di quattro bagni. Nella Suite, la vasca freestanding aggiunge un momento di relax al carattere della stanza."
+              : "The farmhouse has four bathrooms in total. In the Suite, a freestanding bathtub adds a moment of relaxation to the character of the room."}
+          </p>
+        </div>
+      </section>
+      <Rooms lang={lang} />
+      <section class="editorial section-wrap" id="piscina">
+        <div class="editorial-copy">
+          <p class="eyebrow">
+            {it ? "PISCINA E GIARDINO PRIVATI" : "PRIVATE POOL AND GARDEN"}
+          </p>
+          <h2>
+            {it ? "Tutto lo spazio" : "All the space"}
+            <br />
+            <em>{it ? "per stare bene." : "to feel at home."}</em>
+          </h2>
+          <p class="lead">
+            {it
+              ? "La piscina affacciata sul verde, la pedana in legno e gli angoli all’ombra del giardino. Potete scegliere dove fermarvi, senza trovare altri gruppi di ospiti."
+              : "The pool overlooking the countryside, the timber deck and shady corners of the garden. Choose your favourite spot, with no other groups of guests around."}
+          </p>
+          <p>
+            {it
+              ? "La veranda invita a mangiare all’aperto e a prolungare la serata. Casa, piscina, giardino e veranda rimangono a vostro uso esclusivo per tutto il soggiorno. Per le condizioni di utilizzo stagionale della piscina, scriveteci prima di prenotare."
+              : "The veranda is a lovely place to eat outdoors and linger in the evening. The house, pool, garden and veranda are exclusively yours throughout your stay. Please contact us before booking for seasonal pool availability."}
+          </p>
+          <a class="text-link" href={pathFor(lang, "contact")}>
+            {it ? "Chiedeteci informazioni" : "Ask us about your stay"} ↗
+          </a>
+        </div>
+        <figure class="editorial-photo">
+          <Image
+            src={pool}
+            alt={
+              it
+                ? "La piscina privata con vista sulla campagna"
+                : "Private pool overlooking the countryside"
+            }
+            widths={[640, 960, 1440]}
+            sizes="(max-width:800px) 100vw, 48vw"
+            format="webp"
+          />
+          <figcaption>
+            {it ? "LA PISCINA · SOLO PER VOI" : "THE POOL · ALL YOURS"}
+          </figcaption>
+        </figure>
+      </section>
+    </>
+  )}
+  {page === "experiences" && (
+    <>
+      <div class="wide-photo section-wrap">
+        <Image
+          src={village}
+          alt={it ? "Il borgo di Anghiari al tramonto" : "Anghiari at sunset"}
+          widths={[640, 960, 1440]}
+          sizes="90vw"
+          format="webp"
+          loading="eager"
+        />
+      </div>
+      <div class="experience-index section-wrap">
+        {experienceCopy[lang].map(([label], i) => (
+          <a href={`#experience-${i}`}>
+            0{i + 1} <span>{label}</span> ↓
+          </a>
+        ))}
+      </div>
+      {experienceCopy[lang].map(([label, title, text, note], i) => (
+        <section
+          class:list={[
+            "editorial section-wrap experience-detail",
+            { reversed: i % 2 === 1 },
+          ]}
+          id={`experience-${i}`}
+        >
+          <div class="editorial-copy">
+            <p class="eyebrow">
+              0{i + 1} · {label}
+            </p>
+            <h2>{title}</h2>
+            <p class="lead">{text}</p>
+            <p>{note}</p>
+            <a class="text-link" href={pathFor(lang, "contact")}>
+              {it ? "Chiedeteci un consiglio" : "Ask us for suggestions"} ↗
+            </a>
+          </div>
+          <figure class="editorial-photo">
+            <Image
+              src={experienceImages[i]}
+              alt={
+                i === 2
+                  ? it
+                    ? "Anghiari illuminata al tramonto"
+                    : "Anghiari lit up at dusk"
+                  : i === 1
+                    ? it
+                      ? "La campagna intorno alla piscina"
+                      : "Countryside around the pool"
+                    : i === 3
+                      ? it
+                        ? "Un angolo del giardino"
+                        : "A corner of the garden"
+                      : it
+                        ? "La casa tra alberi e campi"
+                        : "The house among trees and fields"
+              }
+              widths={[640, 960, 1440]}
+              sizes="(max-width:800px) 100vw, 48vw"
+              format="webp"
+            />
+            <figcaption>
+              {i === 1
+                ? it
+                  ? "IL PAESAGGIO INTORNO A PALAZZOLO"
+                  : "THE LANDSCAPE AROUND PALAZZOLO"
+                : label}
+            </figcaption>
+          </figure>
+        </section>
+      ))}
+      <section class="local-note section-wrap">
+        <p class="eyebrow">
+          {it ? "IL TERRITORIO, NEL TEMPO" : "THE AREA, THROUGH THE SEASONS"}
+        </p>
+        <h2>
+          {it
+            ? "Ogni stagione, un motivo per tornare."
+            : "A reason to return in every season."}
+        </h2>
+        <p>
+          {it
+            ? "Mostre, appuntamenti nei borghi e iniziative all’aperto possono arricchire il soggiorno. Scriveteci prima di arrivare: vi aiutiamo a capire cosa cercare in zona nelle vostre date."
+            : "Exhibitions, village events and outdoor activities can add something special to your stay. Contact us before you arrive for help finding out what is happening during your dates."}
+        </p>
+      </section>
+    </>
+  )}
+  {page === "gallery" && <Gallery lang={lang} showHeading={false} />}
+  {page === "reviews" && (
+    <>
+      <Reviews lang={lang} showHeading={false} />
+      <section class="review-context section-wrap">
+        <h2>
+          {it
+            ? "Una casa, un’accoglienza diretta."
+            : "One home, a personal welcome."}
+        </h2>
+        <p>
+          {it
+            ? "Volete capire se Palazzolo è adatto al vostro gruppo? Scriveteci per la disposizione degli ambienti, le date o le vostre esigenze. Conoscere la casa prima di partire è il primo passo per sentirsi a proprio agio."
+            : "Wondering whether Palazzolo is right for your group? Ask us about the layout, dates or your needs. Getting to know the house before you arrive is the first step towards feeling at home."}
+        </p>
+        <a class="text-link" href={pathFor(lang, "contact")}>
+          {it ? "Parliamo del vostro soggiorno" : "Let’s talk about your stay"}{" "}
+          ↗
+        </a>
+      </section>
+    </>
+  )}
+  {page === "contact" && (
+    <>
+      <section class="contact-page section-wrap">
+        <div class="contact-direct">
+          <p class="eyebrow">{it ? "PARLATE CON NOI" : "TALK TO US"}</p>
+          <a
+            class="button"
+            href={site.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {it ? "Scrivici su WhatsApp" : "Message us on WhatsApp"} ↗
+          </a>
+          <a class="contact-line" href={`mailto:${site.email}`}>
+            <span>Email</span>
+            {site.email} ↗
+          </a>
+          <a class="contact-line" href={`tel:${site.phoneHref}`}>
+            <span>{it ? "Telefono" : "Phone"}</span>
+            {site.phone} ↗
+          </a>
+          <p>
+            {it
+              ? "Per aiutarci a rispondervi, indicate le date desiderate, il numero di adulti e bambini e le eventuali esigenze del gruppo."
+              : "To help us answer, please include your preferred dates, the number of adults and children and any needs your group may have."}
+          </p>
+          <div class="booking-platforms">
+            <h2>
+              {it ? "Ci trovate anche qui." : "You can also find us here."}
+            </h2>
+            <p>
+              {it
+                ? "Consultate disponibilità e condizioni di prenotazione sulle piattaforme."
+                : "Check availability and booking conditions on the platforms."}
+            </p>
+            <a href={site.airbnb} target="_blank" rel="noopener noreferrer">
+              Airbnb ↗
+            </a>
+            <a href={site.booking} target="_blank" rel="noopener noreferrer">
+              Booking.com ↗
+            </a>
+          </div>
+        </div>
+        <div class="arrival">
+          <Image
+            src={house}
+            alt={
+              it
+                ? "Palazzolo Resort, il casolare in pietra"
+                : "Palazzolo Resort stone farmhouse"
+            }
+            widths={[480, 800, 1200]}
+            sizes="(max-width:800px) 100vw, 44vw"
+            format="webp"
+          />
+          <h2>{it ? "Come arrivare." : "How to find us."}</h2>
+          <address>
+            Via Tavernelle, 14
+            <br />
+            52031 Anghiari (AR), Italia
+          </address>
+          <a
+            class="text-link"
+            href={site.maps}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {it ? "Apri Google Maps" : "Open Google Maps"} ↗
+          </a>
+        </div>
+      </section>
+    </>
+  )}
+</Layout>

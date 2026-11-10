@@ -1,0 +1,82 @@
+---
+import { Image, getImage } from "astro:assets";
+import { photos, rooms, stayCopy } from "../data/stay";
+import type { Language } from "../data/site";
+interface Props {
+  lang: Language;
+}
+const { lang } = Astro.props;
+const t = stayCopy[lang];
+const cards = await Promise.all(
+  rooms.map(async (room) => {
+    const photo = photos.find((item) => item.id === room.photoId)!;
+    const full = await getImage({
+      src: photo.image,
+      width: Math.min(photo.image.width, 1600),
+      format: "webp",
+      quality: 85,
+    });
+    return { ...room, photo, full };
+  }),
+);
+---
+
+<section class="rooms-section" id="camere" aria-labelledby="rooms-title">
+  <div class="section-wrap">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow olive">{t.roomsLabel}</p>
+        <h2 id="rooms-title" class="line-title">
+          {t.roomsTitle}
+        </h2>
+      </div>
+      <p>{t.roomsIntro}</p>
+    </div>
+    <div class="room-grid">
+      {cards.map((room, index) => (
+        <article class="room-card" aria-labelledby={`room-${room.id}`}>
+          <a
+            class="room-photo"
+            href={room.full.src}
+            data-open-photo={room.photoId}
+            aria-label={`${t.roomPhotos}: ${room.name}`}
+          >
+            <Image
+              src={room.photo.image}
+              alt={room.photo.alt[lang]}
+              widths={[480, 768, 1024]}
+              sizes="(max-width: 760px) 100vw, 46vw"
+              format="webp"
+              loading="lazy"
+            />
+            <span class="room-number" aria-hidden="true">
+              0{index + 1}
+            </span>
+            <span class="photo-expand" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+          <div class="room-card-heading">
+            <h3 id={`room-${room.id}`}>{room.name}</h3>
+            <span>{room.area} m²</span>
+          </div>
+          <p class="room-description">{room.description[lang]}</p>
+          <dl class="room-specs">
+            <div>
+              <dt>{t.bed}</dt>
+              <dd>{room.bed[lang]}</dd>
+            </div>
+            <div>
+              <dt>{t.view}</dt>
+              <dd>{room.view[lang]}</dd>
+            </div>
+            <div class="room-detail">
+              <dt>{t.detail}</dt>
+              <dd>{room.detail[lang]}</dd>
+            </div>
+          </dl>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

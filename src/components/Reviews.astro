@@ -1,0 +1,117 @@
+---
+import { reviewPlatforms, guestReviews } from "../data/reviews";
+import type { Language } from "../data/site";
+interface Props {
+  lang: Language;
+  compact?: boolean;
+  showHeading?: boolean;
+}
+const { lang, compact = false, showHeading = true } = Astro.props;
+const it = lang === "it";
+---
+
+<section
+  class:list={["reviews-section section-wrap", { compact }]}
+  aria-labelledby={showHeading ? "reviews-title" : undefined}
+  aria-label={
+    !showHeading
+      ? it
+        ? "Valutazioni e testimonianze"
+        : "Ratings and guest stories"
+      : undefined
+  }
+>
+  {showHeading && (
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">
+          {it ? "LE VOCI DI CHI È STATO QUI" : "FROM OUR GUESTS"}
+        </p>
+        <h2 id="reviews-title">
+          {it
+            ? "Il soggiorno, raccontato da voi."
+            : "Your stay, in your words."}
+        </h2>
+      </div>
+      <p>
+        {it
+          ? "Le esperienze degli ospiti aiutano a immaginare la propria vacanza. Leggete i loro racconti sulle piattaforme dove ci hanno conosciuto."
+          : "Guest experiences help you picture your own holiday. Read their stories on the platforms where they found us."}
+      </p>
+    </div>
+  )}
+  <div class="review-platforms">
+    {reviewPlatforms.map((platform) => (
+      <article class="platform-card">
+        <p class="platform-name">{platform.name}</p>
+        {platform.score !== undefined &&
+        platform.count !== undefined &&
+        platform.checked ? (
+          <>
+            <p class="rating">
+              <strong>
+                {platform.score.toLocaleString(it ? "it-IT" : "en-GB", {
+                  minimumFractionDigits: 1,
+                })}
+              </strong>
+              <span>/ {platform.scale}</span>
+            </p>
+            <p class="rating-count">
+              {platform.count} {it ? "recensioni" : "reviews"}
+            </p>
+            <p class="rating-date">
+              {it ? "Verificato il " : "Checked on "}
+              {new Intl.DateTimeFormat(it ? "it-IT" : "en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                timeZone: "UTC",
+              }).format(new Date(platform.checked + "T00:00:00Z"))}
+            </p>
+          </>
+        ) : (
+          <p class="platform-description">
+            {it
+              ? "Leggete le recensioni degli ospiti direttamente sulla piattaforma."
+              : "Read guest reviews directly on the platform."}
+          </p>
+        )}
+        <a
+          class="text-link"
+          href={platform.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {it ? "Leggi su " : "Read on "}
+          {platform.name}
+          <span aria-hidden="true">↗</span>
+        </a>
+      </article>
+    ))}
+  </div>
+  {guestReviews.length > 0 && (
+    <div class="guest-quotes">
+      {(compact ? [guestReviews[4], guestReviews[0]] : guestReviews).map(
+        (review) => (
+          <figure>
+            <blockquote>
+              <p>“{review.text[lang]}”</p>
+            </blockquote>
+            <figcaption>
+              {review.author} · {review.platform} · {review.date[lang]} ·{" "}
+              {review.note[lang]}{" "}
+              <a href={review.url} target="_blank" rel="noopener noreferrer">
+                {it ? "Leggi la recensione" : "Read review"} ↗
+              </a>
+            </figcaption>
+          </figure>
+        ),
+      )}
+    </div>
+  )}
+  {compact && (
+    <a class="text-link" href={lang === "it" ? "/recensioni/" : "/en/reviews/"}>
+      {it ? "Leggete tutte le testimonianze" : "Read all guest stories"} ↗
+    </a>
+  )}
+</section>
